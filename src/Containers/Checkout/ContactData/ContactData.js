@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import axios from '../../../axios-order';
-import {withRouter} from 'react-router-dom';
+import React, { Component } from "react";
+import axios from "../../../axios-order";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 
-import Button from '../../../Components/UI/Button/Button';
-import Spinner from '../../../Components/UI/Spinner/Spinner';
-import classes from './ContactData.module.css';
-import Input from '../../../Components/UI/Input/Input';
+import Button from "../../../Components/UI/Button/Button";
+import Spinner from "../../../Components/UI/Spinner/Spinner";
+import classes from "./ContactData.module.css";
+import Input from "../../../Components/UI/Input/Input";
 
 class ContactData extends Component {
   state = {
@@ -98,7 +99,7 @@ class ContactData extends Component {
     let isValid = true;
 
     if (rules.required) {
-      isValid = value.trim() !== '' && isValid;
+      isValid = value.trim() !== "" && isValid;
     }
 
     if (rules.minLength) {
@@ -161,16 +162,19 @@ class ContactData extends Component {
 
     updatedFormElement.value = event.target.value;
     updatedOrderForm[inputIdentifier] = updatedFormElement;
-    updatedFormElement.valid = this.checkValidation(updatedFormElement.value, updatedFormElement.validation);
+    updatedFormElement.valid = this.checkValidation(
+      updatedFormElement.value,
+      updatedFormElement.validation
+    );
     updatedFormElement.touched = true;
     console.log(updatedFormElement);
 
     let formIsValid = true;
     for (let inputIdentifier in updatedOrderForm) {
       formIsValid = updatedOrderForm[inputIdentifier].valid && formIsValid;
-    };
+    }
 
-    this.setState({ orderForm: updatedOrderForm , formIsValid: formIsValid });
+    this.setState({ orderForm: updatedOrderForm, formIsValid: formIsValid });
   };
 
   render() {
@@ -196,7 +200,9 @@ class ContactData extends Component {
           />
         ))}
 
-        <Button btnType="Success" disabled={!this.state.formIsValid}>ORDER</Button>
+        <Button btnType="Success" disabled={!this.state.formIsValid}>
+          ORDER
+        </Button>
       </form>
     );
 
@@ -211,6 +217,11 @@ class ContactData extends Component {
       </div>
     );
   }
-};
+}
 
-export default withRouter(ContactData);
+const mapStateToProps = state => ({
+  ings: state.ingredients,
+  totPrc: state.totalPrice
+});
+
+export default connect(mapStateToProps)(withRouter(ContactData));
