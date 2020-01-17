@@ -8,6 +8,7 @@ const button = (props) => (
     className = {
       [classes.Button, classes[props.btnType]].join(' ')
     }
+    disabled={props.disabled}
   >
   {props.children}
   </button>
