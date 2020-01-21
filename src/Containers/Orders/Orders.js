@@ -1,46 +1,47 @@
-import React, { Component } from 'react';
-import axios from '../../axios-order';
-import withErrorHandler from '../../HOC/withErrorHandler/withErrorHandler';
+import React, { Component } from "react";
+import axios from "../../axios-order";
+import withErrorHandler from "../../HOC/withErrorHandler/withErrorHandler";
+import { connect } from "react-redux";
 
-import Order from '../../Components/Order/Order';
+import Order from "../../Components/Order/Order";
+import * as actions from "../../store/actions/index";
+import Spinner from "../../Components/UI/Spinner/Spinner";
 
 class Orders extends Component {
   state = {
     orders: [],
     loading: true
-  }
-  componentDidMount() {
-    axios.get('/orders.json')
-      .then(res => {
-        this.setState({loading: false});
-        const fetchedOrders = [];
-        for (let key in res.data) {
-          fetchedOrders.push({
-            ...res.data[key],
-            id: key
-          });
-        }
-        this.setState({orders: fetchedOrders});
-      })
-      .catch(err => {
-        this.setState({loading: false})
-      });
   };
+
+  componentDidMount() {
+    this.props.onFetchOrders(this.props.tokenf);
+  }
 
   render() {
-  
-    return(
-      <div>
-        {this.state.orders.map(order => (
-          <Order 
-            key={order.id} 
-            ingredients={order.ingredients}
-            price={order.price}
-          />
-        ))}
-      </div>
-    );
-  };
-};
+    let orders = <Spinner />;
+    if (!this.props.loading) {
+      orders = this.props.orders.map(order => (
+        <Order
+          key={order.id}
+          ingredients={order.ingredients}
+          price={order.price}
+        />
+      ));
+    }
+    return <div>{orders}</div>;
+  }
+}
 
-export default withErrorHandler(Orders, axios);
+const mapStateToProps = state => ({
+  orders: state.order.orders,
+  loading: state.order.loading,
+  token: state.auth.token
+});
+const mapDispatchToProps = dispatch => ({
+  onFetchOrders: token => dispatch(actions.fetchOrders(token))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withErrorHandler(Orders, axios));
